@@ -36,16 +36,35 @@ namespace Petapoco
 
             query = @"select Max(pretaxamount) from sales";
             preface = "Highest Sales: ";
-            QueryAndShowMinMax(query, preface);
+            QueryAndShowIntValue(query, preface);
 
             query = @"select Min(pretaxamount) from sales";
             preface = "Lowest Sales: ";
-            QueryAndShowMinMax(query, preface);
+            QueryAndShowIntValue(query, preface);
 
             query = @"select distinct name from salespeople;";
             QueryAndShowDistinctSalespeople(query);
 
+            query = @"select abs(datediff(DAY, Min(saledate),Max(saledate))) from sales";
+            preface = "Date Difference (days): ";
+            QueryAndShowIntValue(query, preface);
+
+            query = @"";
+            QueryAndShowSalesPerMonth(query);
+
+            query = @"";
+            QueryAndShowSalesPerSalesperson(query);
             Console.ReadLine();
+        }
+
+        private static void QueryAndShowSalesPerSalesperson(string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void QueryAndShowSalesPerMonth(string query)
+        {
+            throw new NotImplementedException();
         }
 
         private static void QueryAndShowDistinctSalespeople(string query)
@@ -60,7 +79,7 @@ namespace Petapoco
             }
         }
 
-        private static void QueryAndShowMinMax(string query, string preface)
+        private static void QueryAndShowIntValue(string query, string preface)
         {
             var db = new PetaPoco.Database("dbstring");
             Console.WriteLine();
