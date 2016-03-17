@@ -8,6 +8,7 @@ namespace Petapoco
 {
     class SalesTotal
     {
+        public int salesman_id { get; set; }
         public string TotalSales { get; set; }
     }
 }

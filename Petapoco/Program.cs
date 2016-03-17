@@ -12,6 +12,8 @@ namespace Petapoco
     {
         static void Main(string[] args)
         {
+            TruncateSalesAndSalesPerson();
+
             InsertIntoSalesPeopleSql("Deacon");
             InsertIntoSalesPeopleSql("Edan");
             InsertIntoSalesPeopleSql("Yardley");
@@ -54,23 +56,32 @@ namespace Petapoco
             query = @"select Year(saledate) as 'Year', Month(saledate) as 'Month', sum(pretaxamount) as 'SalesPerMonth' from sales Group By Year(saledate), Month(saledate);";
             QueryAndShowAllSalesByMonth(query);
 
-            query = @"select name  as 'Name' from salespeople;";
-            query2 = @"select sum(pretaxamount) as 'pretaxamount' from sales";
-            QueryAndShowNamesAndSales(query, query2);
+            query = @"select salesman_id, sum(pretaxamount) as 'TotalSales' from sales group by salesman_id;";
+            QueryAndShowNamesAndSales(query);
+
             Console.ReadLine();
+
+            TruncateSalesAndSalesPerson();
         }
 
-        private static void QueryAndShowNamesAndSales(string query2, string query1)
+        private static void TruncateSalesAndSalesPerson()
         {
             var db = new PetaPoco.Database("dbstring");
-            var db2 = new PetaPoco.Database("dbstring");
+
+            db.Delete<Sales>(@"truncate table sales;");
+            db.Delete<Salespeople>(@"truncate table salespeople;");
+        }
+
+        private static void QueryAndShowNamesAndSales(string query)
+        {
+            var db = new PetaPoco.Database("dbstring");
 
             Console.WriteLine();
-            foreach (var a in db.Query<Salespeople>(query1))
-                foreach (var b in db2.Query<Sales>(query2))
-                {
-                    Console.WriteLine($"{a.name} {b.pretaxamount}");
-                }
+            foreach (var a in db.Fetch<SalesTotal>(query))
+            {
+                Console.WriteLine($"Salesman_ID: {a.salesman_id} Total Sales: {a.TotalSales}");
+            }
+
         }
 
         private static void QueryAndShowAllSalesByMonth(string query)
@@ -80,7 +91,7 @@ namespace Petapoco
             Console.WriteLine();
             foreach (var a in db.Query<SalesMade>(query))
             {
-                Console.WriteLine($"{a.Year} {a.Month} {a.SalesPerMonth}");
+                Console.WriteLine($"Year: {a.Year} Month: {a.Month} Sales/Month: {a.SalesPerMonth}");
             }
         }
 
@@ -112,7 +123,7 @@ namespace Petapoco
             Console.WriteLine();
             foreach (var a in db.Query<Sales>(query))
             {
-                Console.WriteLine($"{a.salesman_id} {a.saledate} {a.pretaxamount}");
+                Console.WriteLine($"Salesman_ID: {a.salesman_id} Sale Date: {a.saledate} Sales Amount: {a.pretaxamount}");
             }
         }
 
