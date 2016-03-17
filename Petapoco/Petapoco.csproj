@@ -53,7 +53,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="sales.cs" />
+    <Compile Include="SalesMade.cs" />
     <Compile Include="salespeople.cs" />
+    <Compile Include="SalesTotal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

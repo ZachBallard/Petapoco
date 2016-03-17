@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Petapoco
             InsertIntoSalesPeopleSql(7, new DateTime(2015, 07, 03), 9703);
 
             string query = @"select * from sales;";
+            string query2 = @"";
             string preface = "";
             QueryAndShowAllSales(query);
 
@@ -49,22 +51,37 @@ namespace Petapoco
             preface = "Date Difference (days): ";
             QueryAndShowIntValue(query, preface);
 
-            query = @"";
-            QueryAndShowSalesPerMonth(query);
+            query = @"select Year(saledate) as 'Year', Month(saledate) as 'Month', sum(pretaxamount) as 'SalesPerMonth' from sales Group By Year(saledate), Month(saledate);";
+            QueryAndShowAllSalesByMonth(query);
 
-            query = @"";
-            QueryAndShowSalesPerSalesperson(query);
+            query = @"select name  as 'Name' from salespeople;";
+            query2 = @"select sum(pretaxamount) as 'pretaxamount' from sales";
+            QueryAndShowNamesAndSales(query, query2);
             Console.ReadLine();
         }
 
-        private static void QueryAndShowSalesPerSalesperson(string query)
+        private static void QueryAndShowNamesAndSales(string query2, string query1)
         {
-            throw new NotImplementedException();
+            var db = new PetaPoco.Database("dbstring");
+            var db2 = new PetaPoco.Database("dbstring");
+
+            Console.WriteLine();
+            foreach (var a in db.Query<Salespeople>(query1))
+                foreach (var b in db2.Query<Sales>(query2))
+                {
+                    Console.WriteLine($"{a.name} {b.pretaxamount}");
+                }
         }
 
-        private static void QueryAndShowSalesPerMonth(string query)
+        private static void QueryAndShowAllSalesByMonth(string query)
         {
-            throw new NotImplementedException();
+            var db = new PetaPoco.Database("dbstring");
+
+            Console.WriteLine();
+            foreach (var a in db.Query<SalesMade>(query))
+            {
+                Console.WriteLine($"{a.Year} {a.Month} {a.SalesPerMonth}");
+            }
         }
 
         private static void QueryAndShowDistinctSalespeople(string query)
