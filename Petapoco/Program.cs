@@ -59,11 +59,12 @@ namespace Petapoco
             query = @"select salesman_id, sum(pretaxamount) as 'TotalSales' from sales group by salesman_id;";
             QueryAndShowNamesAndSales(query);
 
-            query = @"Delete from salespeople where salesman_id = 1;";
+            query = @"Delete from salespeople where name = 'Deacon';";
             DeleteOneSalespeopleValue(query);
 
             query = @"select * from sales;";
             QueryAndShowAllSalesPlusTaxAmount(query);
+
             Console.ReadLine();
 
             TruncateSalesAndSalesPerson();
@@ -71,19 +72,30 @@ namespace Petapoco
 
         private static void QueryAndShowAllSalesPlusTaxAmount(string query)
         {
-            throw new NotImplementedException();
+            var db = new PetaPoco.Database("dbstring");
+            double totaltax = 0;
+
+            foreach (var a in db.Query<Sales>(query))
+            {
+                Console.WriteLine($"Salesman_id: {a.salesman_id} Sale Date: {a.saledate} Sale Amount: {a.pretaxamount}");
+                totaltax += a.pretaxamount*.06;
+            }
+
+            Console.WriteLine($"Total Tax for All Sales: {totaltax}");
         }
 
         private static void DeleteOneSalespeopleValue(string query)
         {
             var db = new PetaPoco.Database("dbstring");
             var db2 = new PetaPoco.Database("dbstring");
+            var db3 = new PetaPoco.Database("dbstring");
 
             db.Delete<Sales>(query);
-            db2.Delete<Salespeople>(@"delete * from salespeople where name = 'Deacon'");
+            db2.Delete<Salespeople>(@"delete from sales where salesman_id = 1;");
 
             Console.WriteLine("We fired Deacon (Id of 1)! Yay!");
-            foreach(var a in db.Query<Sales>(@"select * from sales;"))
+
+            foreach (var a in db3.Query<Sales>(@"select * from sales;"))
             {
                 Console.WriteLine($"Salesman_id: {a.salesman_id} Sales Date:{a.saledate} Sales Amount: {a.pretaxamount}");
             }
