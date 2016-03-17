@@ -59,9 +59,34 @@ namespace Petapoco
             query = @"select salesman_id, sum(pretaxamount) as 'TotalSales' from sales group by salesman_id;";
             QueryAndShowNamesAndSales(query);
 
+            query = @"Delete from salespeople where salesman_id = 1;";
+            DeleteOneSalespeopleValue(query);
+
+            query = @"select * from sales;";
+            QueryAndShowAllSalesPlusTaxAmount(query);
             Console.ReadLine();
 
             TruncateSalesAndSalesPerson();
+        }
+
+        private static void QueryAndShowAllSalesPlusTaxAmount(string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void DeleteOneSalespeopleValue(string query)
+        {
+            var db = new PetaPoco.Database("dbstring");
+            var db2 = new PetaPoco.Database("dbstring");
+
+            db.Delete<Sales>(query);
+            db2.Delete<Salespeople>(@"delete * from salespeople where name = 'Deacon'");
+
+            Console.WriteLine("We fired Deacon (Id of 1)! Yay!");
+            foreach(var a in db.Query<Sales>(@"select * from sales;"))
+            {
+                Console.WriteLine($"Salesman_id: {a.salesman_id} Sales Date:{a.saledate} Sales Amount: {a.pretaxamount}");
+            }
         }
 
         private static void TruncateSalesAndSalesPerson()
